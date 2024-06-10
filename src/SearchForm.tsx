@@ -1,26 +1,35 @@
-import { MouseEvent, useState } from "react"
+import { ChangeEvent, MouseEvent, useState } from "react"
 
 type Props = {
-    onSubmit: (searchFilters: { 
-        term: string, 
-        includeTerritories: boolean, 
+    onSubmit: (searchFilters: {
+        term: string,
+        includeTerritories: boolean,
         populationRange: string
     }) => void
 }
 
 export default function SearchForm({ onSubmit }: Props) {
-    const [searchTermValue, setSearchTermValue] = useState("")
-    const [includeTerritoriesValue, setIncludeTerritoriesValue] = useState(false)
-    const [populationRangeValue, setPopulationRangeValue] = useState("0-5")
+    const [formValues, setFormValues] = useState({
+        term: "",
+        includeTerritories: false,
+        populationRange: "0-5"
+    })
 
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => 
+        setFormValues({ 
+            ...formValues, 
+            [event.target.name]: event.target.value 
+        })
+
+    const handleCheckChange = (event: ChangeEvent<HTMLInputElement>) =>
+        setFormValues({ 
+            ...formValues, 
+            [event.target.name]: event.target.checked 
+        })
 
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        onSubmit({
-            term: searchTermValue,
-            includeTerritories: includeTerritoriesValue,
-            populationRange: populationRangeValue
-        })
+        onSubmit(formValues)
     }
 
     return (
@@ -28,29 +37,31 @@ export default function SearchForm({ onSubmit }: Props) {
             <label>Search:</label>
             <input
                 type="text"
-                onChange={(event) => setSearchTermValue(event.target.value)}
-                value={searchTermValue}
+                name="term"
+                onChange={handleChange}
+                value={formValues.term}
             />
-            <button onClick={() => setSearchTermValue("")}>Clear</button>
+            <button onClick={() => setFormValues({ ...formValues, term: "" })}>Clear</button>
 
             <div>
                 <input
                     type="checkbox"
-                    onChange={(event) => setIncludeTerritoriesValue(event.target.checked)}
-                    checked={includeTerritoriesValue}
+                    name="includeTerritories"
+                    onChange={handleCheckChange}
+                    checked={formValues.includeTerritories}
                 /> Include Territories
 
-                <input type="radio" name="population" value="0-5"
-                    onChange={(event) => setPopulationRangeValue(event.target.value)}
-                    checked={populationRangeValue === "0-5"}
+                <input type="radio" name="populationRange" value="0-5"
+                    onChange={handleChange}
+                    checked={formValues.populationRange === "0-5"}
                 /> 0-5m
-                <input type="radio" name="population" value="5-10"
-                    onChange={(event) => setPopulationRangeValue(event.target.value)}
-                    checked={populationRangeValue === "5-10"}
+                <input type="radio" name="populationRange" value="5-10"
+                    onChange={handleChange}
+                    checked={formValues.populationRange === "5-10"}
                 /> 5m-10m
-                <input type="radio" name="population" value="10+"
-                    onChange={(event) => setPopulationRangeValue(event.target.value)}
-                    checked={populationRangeValue === "10+"}
+                <input type="radio" name="populationRange" value="10+"
+                    onChange={handleChange}
+                    checked={formValues.populationRange === "10+"}
                 /> 10m+
             </div>
 
